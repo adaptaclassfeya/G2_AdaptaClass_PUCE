@@ -1,0 +1,339 @@
+// Prisma schema for Adapta Class
+// Based on: adapta-class-documento-tecnico.md — Sección 4
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum TipoJuego {
+  BASE
+  CAMBIANTE
+}
+
+enum TipoFuente {
+  DEFAULT
+  MANUAL
+  IA
+}
+
+enum MissionType {
+  PLAY_TIME
+  PLAY_DISTINCT
+  ANSWER_CORRECT
+}
+
+enum AchievementCode {
+  FIRST_PLAY
+  FIRST_MISSION
+  STREAK_7
+  PERFECT_GAME
+  MARATHON
+  ANSWER_50
+}
+
+// ─── Auth & Users ────────────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password_hash String
+  role          Role
+  created_at    DateTime @default(now())
+
+  student       Student?
+  teacher       Teacher?
+
+  // Relations as teacher
+  paralelos           Paralelo[]               @relation("TeacherParalelos")
+  question_sources    QuestionSource[]         @relation("TeacherQuestionSources")
+  questions           Question[]               @relation("TeacherQuestions")
+  missions            Mission[]                @relation("MissionCreator")
+
+  // Relations as student
+  mission_progress    StudentMissionProgress[] @relation("StudentMissionProgressUser")
+  game_sessions       GameSession[]            @relation("StudentGameSessions")
+  attempts            QuestionAttempt[]        @relation("StudentAttempts")
+  notifications       Notification[]           @relation("NotificationStudent")
+  achievements        StudentAchievement[]     @relation("StudentAchievements")
+
+  @@map("users")
+}
+
+model Student {
+  user_id         String    @id
+  nombre          String
+  puntos_xp       Int       @default(0)
+  racha_dias      Int       @default(0)
+  last_login_date DateTime? @db.Date
+  paralelo_id     String?
+
+  user     User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  paralelo Paralelo? @relation(fields: [paralelo_id], references: [id], onDelete: SetNull)
+
+  @@index([paralelo_id])
+  @@map("students")
+}
+
+model Teacher {
+  user_id String @id
+  nombre  String
+  cedula  String? @unique
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("teachers")
+}
+
+// ─── Paralelos ───────────────────────────────────────────
+
+model Paralelo {
+  id             String   @id @default(uuid())
+  nombre         String
+  grado          Int
+  teacher_id     String
+  codigo_acceso  String   @unique @db.VarChar(6)
+  activo         Boolean  @default(true)
+  created_at     DateTime @default(now())
+
+  // ─── Chatbot config (per-paralelo, see CLAUDE.md "Chatbot") ──────────
+  // Master switch — when false, the floating widget never renders in the
+  // student shell. Default true so the chatbot is on out of the box.
+  chatbot_enabled            Boolean  @default(true)
+  // LLM fallback toggle — when false, unknown questions fall back to a
+  // canned reply with quick-reply chips (zero tokens spent). Default
+  // TRUE because the chatbot's value with the context-rich builder
+  // depends entirely on the LLM path; without it most non-canned
+  // questions ("¿de qué trata este juego?", "¿qué temas estoy
+  // estudiando?") hit the canned response. Per-paralelo rate limit
+  // (3 req/min/student) + endpoint throttle (20 req/min) keep API
+  // costs bounded. The teacher can flip it back to false from the
+  // paralelo settings if they want to pause API usage.
+  chatbot_llm_enabled        Boolean  @default(true)
+  // Optional persona name shown to the student ("Adapti" by default).
+  chatbot_persona_name       String?
+  // Up to 5 extra quick-reply chips the teacher wants surfaced (e.g.
+  // "¿Qué tema veremos hoy?"). Stored as String[] — Prisma maps to
+  // Postgres TEXT[]. Length & item-length validated in the DTO.
+  chatbot_extra_suggestions  String[] @default([])
+
+  teacher           User              @relation("TeacherParalelos", fields: [teacher_id], references: [id])
+  students          Student[]
+  missions          Mission[]
+  question_sources  QuestionSource[]
+  questions         Question[]
+
+  @@map("paralelos")
+}
+
+// ─── Games ───────────────────────────────────────────────
+
+model Game {
+  id                  String    @id @default(uuid())
+  titulo              String    @unique
+  tema                String
+  tipo                TipoJuego
+  acepta_preguntas_ia Boolean   @default(false)
+  config_default      Json?
+  grado_min           Int
+  grado_max           Int
+  descripcion         String?
+  thumbnail_url       String?
+
+  content       GameContent[]
+  game_sessions GameSession[]
+
+  @@map("games")
+}
+
+model GameContent {
+  id             String @id @default(uuid())
+  game_id        String
+  grado          Int
+  contenido_json Json
+
+  game Game @relation(fields: [game_id], references: [id], onDelete: Cascade)
+
+  @@unique([game_id, grado])
+  @@map("game_content")
+}
+
+// ─── Question Bank (Banco de Preguntas) ──────────────────
+
+model QuestionSource {
+  id          String     @id @default(uuid())
+  teacher_id  String
+  paralelo_id String?
+  filename    String
+  source_hash String
+  tema        String    @default("General")
+  created_at  DateTime   @default(now())
+
+  teacher   User       @relation("TeacherQuestionSources", fields: [teacher_id], references: [id], onDelete: Cascade)
+  paralelo  Paralelo?  @relation(fields: [paralelo_id], references: [id], onDelete: Cascade)
+  questions Question[]
+
+  @@map("question_sources")
+}
+
+model Question {
+  id                 String            @id @default(uuid())
+  teacher_id         String
+  paralelo_id        String?
+  source_id          String?
+  tema               String    @default("General")
+  texto              String
+  opciones           Json
+  respuesta_correcta String
+  created_at         DateTime          @default(now())
+
+  teacher   User              @relation("TeacherQuestions", fields: [teacher_id], references: [id], onDelete: Cascade)
+  paralelo  Paralelo?         @relation(fields: [paralelo_id], references: [id], onDelete: Cascade)
+  source    QuestionSource?   @relation(fields: [source_id], references: [id], onDelete: Cascade)
+  attempts  QuestionAttempt[]
+
+  @@map("questions")
+}
+
+// ─── Missions & Progress ─────────────────────────────────
+
+model Mission {
+  id           String      @id @default(uuid())
+  paralelo_id  String
+  tipo         MissionType
+  goal_value   Int
+  fecha_limite DateTime
+  created_by   String
+  created_at   DateTime    @default(now())
+  // Optional free-text description shown to students on the mission card.
+  // Lets the teacher say things like "Reto semanal de lectura: lee 10
+  // minutos diarios" without us having to enum every variation.
+  descripcion  String?
+  // XP awarded when the student completes the mission. Defaults to 100 so
+  // existing missions keep their reward, but the teacher can dial it up
+  // for tougher / longer challenges and down for warm-ups.
+  xp_reward    Int         @default(100)
+
+  paralelo      Paralelo                 @relation(fields: [paralelo_id], references: [id], onDelete: Cascade)
+  creator       User                     @relation("MissionCreator", fields: [created_by], references: [id])
+  progress      StudentMissionProgress[]
+  notifications Notification[]
+
+  @@map("missions")
+}
+
+model StudentMissionProgress {
+  id           String    @id @default(uuid())
+  student_id   String
+  mission_id   String
+  // Decimal so PLAY_TIME progress can store fractional minutes from the
+  // 30-second heartbeats (each heartbeat adds 0.5 min). PLAY_DISTINCT and
+  // ANSWER_CORRECT will always be whole numbers but the column is shared.
+  current_value Decimal   @default(0) @db.Decimal(7, 2)
+  completado   Boolean   @default(false)
+  xp_otorgado  Boolean   @default(false)
+  completed_at DateTime?
+
+  student   User    @relation("StudentMissionProgressUser", fields: [student_id], references: [id], onDelete: Cascade)
+  mission   Mission @relation(fields: [mission_id], references: [id], onDelete: Cascade)
+
+  @@unique([student_id, mission_id])
+  @@index([student_id])
+  @@index([mission_id])
+  @@map("student_mission_progress")
+}
+
+// ─── Game Sessions & Attempts ────────────────────────────
+
+model GameSession {
+  id                  String            @id @default(uuid())
+  student_id          String
+  game_id             String
+  started_at          DateTime          @default(now())
+  minutos_jugados     Decimal           @default(0) @db.Decimal(5, 2)
+  preguntas_correctas Int               @default(0)
+  preguntas_intentadas Int               @default(0)
+
+  student  User              @relation("StudentGameSessions", fields: [student_id], references: [id], onDelete: Cascade)
+  game     Game              @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  attempts QuestionAttempt[]
+
+  @@map("game_sessions")
+}
+
+model QuestionAttempt {
+  id              String      @id @default(uuid())
+  student_id      String
+  question_id     String
+  game_session_id String
+  correcta        Boolean
+  answered_at     DateTime    @default(now())
+
+  student      User        @relation("StudentAttempts", fields: [student_id], references: [id], onDelete: Cascade)
+  question     Question    @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  game_session GameSession @relation(fields: [game_session_id], references: [id], onDelete: Cascade)
+
+  @@map("question_attempts")
+}
+
+// ─── Notifications ───────────────────────────────────────
+
+model Notification {
+  id         String   @id @default(uuid())
+  student_id String
+  mission_id String
+  mensaje    String
+  leida      Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  student User    @relation("NotificationStudent", fields: [student_id], references: [id])
+  mission Mission @relation(fields: [mission_id], references: [id], onDelete: Cascade)
+
+  @@index([student_id])
+  @@index([mission_id])
+  @@map("notifications")
+}
+
+// ─── Achievements / Badges ───────────────────────────────
+
+model Achievement {
+  id          String          @id @default(uuid())
+  codigo      AchievementCode @unique
+  nombre      String
+  descripcion String
+  icon        String // Material Symbol name (e.g. "rocket_launch")
+  xp_reward   Int             @default(50)
+  created_at  DateTime        @default(now())
+
+  student_achievements StudentAchievement[]
+
+  @@map("achievements")
+}
+
+model StudentAchievement {
+  id             String   @id @default(uuid())
+  student_id     String
+  achievement_id String
+  earned_at      DateTime @default(now())
+  xp_gained      Int      @default(0)
+
+  student     User        @relation("StudentAchievements", fields: [student_id], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievement_id], references: [id], onDelete: Cascade)
+
+  @@unique([student_id, achievement_id])
+  @@index([student_id])
+  @@index([achievement_id])
+  @@map("student_achievements")
+}
+

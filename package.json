@@ -1,0 +1,17 @@
+{
+  "name": "adaptaclass-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "postinstall": "node -e \"try { require.resolve('@prisma/client'); require('child_process').execSync('npx prisma generate --schema=backend/prisma/schema.prisma', {stdio: 'inherit'}); } catch (e) { console.log('Skipping prisma generation: @prisma/client not installed'); }\""
+  },
+  "dependencies": {
+    "@prisma/client": "^7.8.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.8.0"
+  }
+}

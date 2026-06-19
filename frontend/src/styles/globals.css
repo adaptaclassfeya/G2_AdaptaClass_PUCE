@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #00473f;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #006156;
+  --color-on-primary-container: #bbfff1;
+  --color-primary-fixed: #a4f1e2;
+  --color-primary-fixed-dim: #89d4c6;
+  --color-on-primary-fixed: #00201c;
+  --color-on-primary-fixed-variant: #005047;
+  --color-secondary: #725475;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fdd6fe;
+  --color-on-secondary-container: #795a7b;
+  --color-tertiary: #93391d;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #b25133;
+  --color-on-tertiary-container: #ffeeea;
+  --color-tertiary-fixed: #ffdbd1;
+  --color-on-tertiary-fixed: #3a0a00;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-background: #fef9f1;
+  --color-on-background: #1d1c17;
+  --color-surface: #fef9f1;
+  --color-on-surface: #181c1b;
+  --color-surface-variant: #e7e2da;
+  --color-on-surface-variant: #3f4946;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f8f3eb;
+  --color-surface-container: #f2ede5;
+  --color-surface-container-high: #ece8e0;
+  --color-surface-container-highest: #e0e3e1;
+  --color-surface-dim: #d8dbd9;
+  --color-surface-bright: #f7faf8;
+  --color-outline: #6f7976;
+  --color-outline-variant: #bec9c5;
+  --color-inverse-surface: #2d3130;
+  --color-inverse-on-surface: #eef1ef;
+  --font-headline: "Space Mono", monospace;
+  --font-body: "Lexend", sans-serif;
+  --spacing-base: 8px;
+  --spacing-xs: 4px;
+  --spacing-sm: 12px;
+  --spacing-md: 24px;
+  --spacing-gutter: 24px;
+  --spacing-lg: 48px;
+  --spacing-xl: 64px;
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-desktop: 48px;
+}
+
+html {
+  background: #fef9f1;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+body {
+  min-width: 320px;
+  /* Fallback for browsers that don't support dvh (older Safari, Firefox <120). */
+  min-height: 100vh;
+  /* iOS Safari counts the URL bar in 100vh, which crops the game gamepad
+     once the bar collapses. 100dvh tracks the dynamic viewport height. */
+  min-height: 100dvh;
+  margin: 0;
+  background: #fef9f1;
+  color: #181c1b;
+  font-family: "Lexend", sans-serif;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Kill the default iOS Safari blue flash on every tap. Gameplay buttons and
+   the virtual gamepad already have their own pressed states. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  line-height: 1;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  text-align: center;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.scanlines {
+  background: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0),
+    rgb(255 255 255 / 0) 50%,
+    rgb(0 0 0 / 0.05) 50%,
+    rgb(0 0 0 / 0.05)
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+}
+
+.bg-grid-retro {
+  background-image:
+    linear-gradient(to right, #e7e2da 1px, transparent 1px),
+    linear-gradient(to bottom, #e7e2da 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.neo-shadow {
+  box-shadow: 4px 4px 0 0 #1d1c17;
+}
+
+.neo-shadow-lg {
+  box-shadow: 8px 8px 0 0 #1d1c17;
+}
+
+.neo-border-2 {
+  border: 2px solid #1d1c17;
+}
+
+.neo-border-4 {
+  border: 4px solid #1d1c17;
+}
