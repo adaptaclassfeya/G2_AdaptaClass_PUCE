@@ -1,6 +1,18 @@
 # Diccionario de Datos - AdaptaClassX
 
 Este documento describe la estructura de la base de datos de AdaptaClassX, detallando qué representa cada tabla (colección) y cuáles son sus campos principales, basándose en el esquema de Prisma.
+Ademas de esto es importante aclarar los siguientes puntos:
+Tanto el script SQL de generacion de tablas y el archivo.seed, se encuentran dentro de este repositorio.
+En la siguiente ubicación:
+Script SQL de generacion de tablas
+
+backend/prisma/schema.prisma
+
+Archivo.seed:
+
+backend/prisma/seed.ts
+
+
 
 ---
 
