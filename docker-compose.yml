@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # ─── Base de Datos ──────────────────────────────────────────────────────────
   db:
     image: postgres:15
     container_name: adapta_class_db
@@ -12,6 +13,42 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d adapta_class"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Backend (NestJS) ───────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: adapta_class_backend
+    environment:
+      # En Coolify, Alejandro reemplazará estos valores con los reales
+      DATABASE_URL: postgresql://root:rootpassword@db:5432/adapta_class
+      JWT_SECRET: change_me_in_production
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ─── Frontend (React + Vite → nginx) ───────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # IMPORTANTE: en Coolify cambiar esta URL al subdominio real del backend
+        VITE_API_URL: http://localhost:3000/api
+    container_name: adapta_class_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
