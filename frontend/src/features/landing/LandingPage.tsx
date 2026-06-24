@@ -75,6 +75,31 @@ export function LandingPage() {
         </div>
       </main>
 
+      <footer className="relative z-10 border-t-4 border-on-background bg-surface-container-lowest">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-sm px-margin-mobile py-md md:flex-row md:justify-between md:px-margin-desktop">
+          <div className="flex flex-col items-center gap-xs md:items-start">
+            <span className="font-mono text-xs font-bold uppercase tracking-widest text-primary">
+              En colaboración con
+            </span>
+            <div className="h-[2px] w-12 bg-primary" />
+          </div>
+          <div className="border-2 border-on-background bg-on-background px-md py-xs shadow-[3px_3px_0_0_#1d1c17]">
+            <img
+              src="/assets/logos/puce.png"
+              alt="Pontificia Universidad Católica del Ecuador"
+              className="h-10 w-auto object-contain md:h-12"
+            />
+          </div>
+          <Link
+            to={routePaths.credits}
+            className="flex items-center gap-xs border-2 border-on-background px-sm py-xs font-mono text-xs font-bold uppercase tracking-widest text-on-surface-variant shadow-[2px_2px_0_0_#1d1c17] transition-colors hover:bg-surface-variant hover:text-primary"
+          >
+            <span className="material-symbols-outlined text-[16px]">info</span>
+            Créditos
+          </Link>
+        </div>
+      </footer>
+
     </div>
   );
 }

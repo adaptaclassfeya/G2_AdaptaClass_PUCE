@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthRedirect, ProtectedRoute } from './ProtectedRoute';
 import { routePaths } from './routePaths';
 import { LandingPage } from '../../features/landing/LandingPage';
+import { CreditsPage } from '../../features/landing/CreditsPage';
 import { LoginPage } from '../../features/auth/pages/LoginPage';
 import { RegisterPage } from '../../features/auth/pages/RegisterPage';
 import { StudentDashboardPage } from '../../features/student/pages/StudentDashboardPage';
@@ -115,6 +116,7 @@ export function AppRouter() {
     >
       <Routes>
       <Route path={routePaths.home} element={<LandingPage />} />
+      <Route path={routePaths.credits} element={<CreditsPage />} />
       <Route
         path={routePaths.login}
         element={

@@ -43,9 +43,11 @@ api.interceptors.response.use(
   (error) => {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
       // Cookie session is gone — clear the cached user snapshot and
-      // bounce to login, but avoid an endless redirect loop.
+      // bounce to login, but only from protected pages. Public pages
+      // (landing, credits, register) are fine without a session.
       localStorage.removeItem('user');
-      if (!window.location.pathname.startsWith('/login')) {
+      const publicPaths = ['/', '/creditos', '/login', '/register'];
+      if (!publicPaths.includes(window.location.pathname)) {
         window.location.href = '/login';
       }
     }

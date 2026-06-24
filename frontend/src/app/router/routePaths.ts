@@ -2,6 +2,7 @@ import type { UserRole } from '../../types/auth';
 
 export const routePaths = {
   home: '/',
+  credits: '/creditos',
   login: '/login',
   register: '/register',
   studentDashboard: '/student/dashboard',
