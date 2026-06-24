@@ -157,3 +157,34 @@ graph TD
 ```
 
 ---
+
+## Tecnologías y Licencias de Terceros
+
+AdaptaClassX hace uso de las siguientes librerías, frameworks y repositorios de terceros. A continuación se detalla cada uno junto con su respectiva licencia:
+
+### Frontend
+- **[React](https://react.dev/)**: Librería para la construcción de interfaces de usuario. Licencia: **MIT**
+- **[Vite](https://vitejs.dev/)**: Herramienta de compilación y servidor de desarrollo. Licencia: **MIT**
+- **[Zustand](https://zustand-demo.pmnd.rs/)**: Manejador de estado global ligero. Licencia: **MIT**
+- **[Tailwind CSS](https://tailwindcss.com/)**: Framework de utilidades CSS. Licencia: **MIT**
+- **[Recharts](https://recharts.org/)**: Librería de gráficos interactivos. Licencia: **MIT**
+- **[Axios](https://axios-http.com/)**: Cliente HTTP para solicitudes a la API. Licencia: **MIT**
+- **[Pusher JS](https://pusher.com/)**: SDK del cliente para WebSockets. Licencia: **MIT**
+- **[Phaser](https://phaser.io/)**: Framework para juegos HTML5 interactivos. Licencia: **MIT**
+
+### Backend
+- **[NestJS](https://nestjs.com/)**: Framework para construir aplicaciones Node.js eficientes y escalables. Licencia: **MIT**
+- **[Prisma ORM](https://www.prisma.io/)**: ORM moderno para interactuar con la base de datos. Licencia: **Apache 2.0**
+- **[PostgreSQL](https://www.postgresql.org/)**: Motor de base de datos relacional. Licencia: **PostgreSQL License**
+- **[Redis / ioredis](https://github.com/redis/ioredis)**: Cliente robusto de Redis para manejar caché. Licencia: **MIT**
+- **[OpenAI Node SDK](https://github.com/openai/openai-node)**: Cliente oficial para integración con Inteligencia Artificial. Licencia: **Apache 2.0**
+- **[Pusher Server SDK](https://github.com/pusher/pusher-http-node)**: SDK del servidor para envío de eventos de WebSockets. Licencia: **MIT**
+- **[Bcrypt](https://github.com/kelektiv/node.bcrypt.js)**: Librería criptográfica para el hashing de contraseñas. Licencia: **MIT**
+- **[Mammoth](https://github.com/mwilliamson/mammoth.js)**: Utilidad para la extracción de texto desde archivos Word. Licencia: **BSD 2-Clause**
+- **[PDF-Parse](https://gitlab.com/autokent/pdf-parse)**: Extracción de texto desde documentos PDF. Licencia: **MIT**
+
+
+
+
+
+
