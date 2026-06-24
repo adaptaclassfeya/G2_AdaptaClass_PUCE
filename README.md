@@ -1,4 +1,4 @@
-# AdaptaClassX
+# AdaptaClass
 
 Plataforma de gamificación con Inteligencia Artificial para el aprendizaje de matemáticas, desarrollada para facilitar la interacción y el monitoreo entre estudiantes y profesores a través de actividades interactivas en tiempo real.
 
@@ -22,7 +22,7 @@ Sigue estos pasos para instalar el proyecto en tu entorno local:
 1. **Clonar el repositorio:**
    ```bash
    git clone <url-del-repositorio>
-   cd G2-AdaptaClassX
+   cd G2_AdaptaClass_PUCE
    ```
 
 2. **Instalar dependencias del Backend:**
