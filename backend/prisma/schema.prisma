@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
 }
 
 // ─── Enums ───────────────────────────────────────────────
@@ -126,7 +126,8 @@ model Paralelo {
   // Up to 5 extra quick-reply chips the teacher wants surfaced (e.g.
   // "¿Qué tema veremos hoy?"). Stored as String[] — Prisma maps to
   // Postgres TEXT[]. Length & item-length validated in the DTO.
-  chatbot_extra_suggestions  String[] @default([])
+  // MySQL no tiene arrays nativos — se almacena como JSON (equivalente a String[])
+  chatbot_extra_suggestions  Json     @default("[]")
 
   teacher           User              @relation("TeacherParalelos", fields: [teacher_id], references: [id])
   students          Student[]

@@ -1,7 +1,7 @@
 # ─── Stage 1: Build ──────────────────────────────────────────────────────────
 FROM node:20-slim AS builder
 
-# Dependencias necesarias para compilar bcrypt y Prisma engines
+# openssl necesario para Prisma; bcrypt solo necesita python3/make/g++
 RUN apt-get update && apt-get install -y \
     python3 make g++ openssl \
     && rm -rf /var/lib/apt/lists/*
@@ -11,15 +11,13 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Instalar todas las dependencias (incluyendo devDependencies para el build)
 RUN npm ci
 
-# Generar Prisma Client
+# Generar Prisma Client (MySQL)
 RUN npx prisma generate
 
 COPY . .
 
-# Compilar NestJS → dist/
 RUN npm run build
 
 # ─── Stage 2: Production ─────────────────────────────────────────────────────
@@ -33,16 +31,11 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Solo dependencias de producción
-RUN npm ci --only=production
+RUN npm ci --only=production && npx prisma generate
 
-# Generar Prisma Client en la imagen de producción
-RUN npx prisma generate
-
-# Copiar el build compilado
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 
-# Correr migraciones y luego arrancar el servidor
+# DATABASE_URL se inyecta como variable de entorno en Coolify
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]

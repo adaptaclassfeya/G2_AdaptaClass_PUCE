@@ -121,7 +121,7 @@ export class ChatService {
       persona_name: paralelo.chatbot_persona_name || DEFAULT_PERSONA,
       suggestions: [
         ...baseSuggestions,
-        ...(paralelo.chatbot_extra_suggestions ?? []),
+        ...((paralelo.chatbot_extra_suggestions as string[]) ?? []),
       ],
     };
   }

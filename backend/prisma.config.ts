@@ -1,17 +1,14 @@
+import { defineConfig } from 'prisma/config';
 import * as dotenv from 'dotenv';
 import path from 'path';
 
-// Lee el .env desde la raíz del repo (un nivel arriba de backend/).
-// En producción (Vercel) las vars vienen del dashboard, no de este archivo.
+// En desarrollo lee el .env local. En producción (Coolify) las vars vienen del entorno.
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-export default {
-  // Prisma 7 reads connection URLs from this config (not from `schema.prisma`).
-  // Use DIRECT_URL for Migrate so DDL doesn't go through the PgBouncer pool.
+export default defineConfig({
+  // Prisma 7: la URL de conexión va aquí, no en schema.prisma
+  // El motor Rust de Prisma maneja MySQL nativamente con esta URL.
   datasource: {
-    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL,
   },
-  migrations: {
-    seed: 'ts-node ./prisma/seed.ts',
-  },
-};
+});

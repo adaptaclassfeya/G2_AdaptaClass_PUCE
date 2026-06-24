@@ -238,7 +238,7 @@ export class ParalelosService {
       chatbot_enabled: paralelo.chatbot_enabled,
       chatbot_llm_enabled: paralelo.chatbot_llm_enabled,
       chatbot_persona_name: paralelo.chatbot_persona_name,
-      chatbot_extra_suggestions: paralelo.chatbot_extra_suggestions ?? [],
+      chatbot_extra_suggestions: (paralelo.chatbot_extra_suggestions as string[]) ?? [],
     };
   }
 
@@ -290,7 +290,7 @@ export class ParalelosService {
       chatbot_enabled: updated.chatbot_enabled,
       chatbot_llm_enabled: updated.chatbot_llm_enabled,
       chatbot_persona_name: updated.chatbot_persona_name,
-      chatbot_extra_suggestions: updated.chatbot_extra_suggestions ?? [],
+      chatbot_extra_suggestions: (updated.chatbot_extra_suggestions as string[]) ?? [],
     };
   }
 }
